@@ -4,50 +4,47 @@ namespace DailymilePHP;
 
 class FetcherTest extends \PHPUnit_Framework_TestCase {
 
-    public function testFetchUsesBaseUrlFromConstructor()
+    private $_fetcher, $_guzzle, $_request, $_response;
+
+    public function setUp()
     {
-        $mockResponse = $this->getMockBuilder("Guzzle\\Http\\Message\\Response")
+        $this->_response = $this->getMockBuilder("Guzzle\\Http\\Message\\Response")
             ->disableOriginalConstructor()
             ->getMock();
-        $mockResponse->expects($this->once())->method('getBody')->will(
+        $this->_response->expects($this->any())->method('getBody')->will(
             $this->returnValue('{}')
         );
 
-        $mockRequest = $this->getMock("Guzzle\\Http\\Message\\RequestInterface");
-        $mockRequest->expects($this->once())->method('send')
-            ->will($this->returnValue($mockResponse));
+        $this->_request = $this->getMock("Guzzle\\Http\\Message\\RequestInterface");
+        $this->_request->expects($this->any())->method('send')
+            ->will($this->returnValue($this->_response));
+
+        $this->_guzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
+        $this->_guzzle->expects($this->any())
+            ->method('get')
+            ->will($this->returnValue($this->_request));
+
+        $this->_fetcher = new Fetcher($this->_guzzle);
+    }
+
+    public function testFetchUsesBaseUrlFromConstructor()
+    {
+        $this->_response->expects($this->once())->method('getBody');
+        $this->_request->expects($this->once())->method('send');
         
-        $mockGuzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
-        $mockGuzzle->expects($this->once())
+        $this->_guzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
+        $this->_guzzle->expects($this->once())
             ->method('get')
             ->with("http://api.dailymile.com/")
-            ->will($this->returnValue($mockRequest));
+            ->will($this->returnValue($this->_request));
 
-        $fetcher = new Fetcher($mockGuzzle);
-        $fetcher->fetch();
+        $this->_fetcher = new Fetcher($this->_guzzle);
+        $this->_fetcher->fetch();
     }
 
     public function testFetchReturnsDecodedJsonString()
     {
-        $mockResponse = $this->getMockBuilder("Guzzle\\Http\\Message\\Response")
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockResponse->expects($this->once())->method('getBody')->will(
-            $this->returnValue('{}')
-        );
-
-        $mockRequest = $this->getMock("Guzzle\\Http\\Message\\RequestInterface");
-        $mockRequest->expects($this->once())->method('send')
-            ->will($this->returnValue($mockResponse));
-        
-        $mockGuzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
-        $mockGuzzle->expects($this->once())
-            ->method('get')
-            ->with("http://api.dailymile.com/")
-            ->will($this->returnValue($mockRequest));
-
-        $fetcher = new Fetcher($mockGuzzle);
-        $this->assertInstanceOf('stdClass', $fetcher->fetch());
+        $this->assertInstanceOf('stdClass', $this->_fetcher->fetch());
     }
 
 }
