@@ -5,13 +5,25 @@ namespace DailymilePHP;
 class Client {
     private $_fetcher;
 
-    public function getEntries()
+    public function getEntries($username=null)
     {
-        $this->getFetcher()->fetch('entries');
+        $endpoint = "entries";
+
+        if ($username)
+        {
+            $endpoint = "people/$username/$endpoint";
+        }
+
+        return $this->getFetcher()->fetch($endpoint);
     }
 
     public function getFetcher()
     {
+        if (!$this->_fetcher)
+        {
+            $this->_fetcher = new Fetcher;
+        }
+
         return $this->_fetcher;
     }
 
