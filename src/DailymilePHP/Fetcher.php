@@ -11,9 +11,10 @@ class Fetcher {
         $this->_httpClient = $httpClient ?: new \Guzzle\Http\Client;
     }
 
-    public function fetch()
+    public function fetch($endpoint='')
     {
-        $response = $this->_httpClient->get('http://api.dailymile.com/')->send()->getBody();
+        $url = "http://api.dailymile.com/$endpoint.json";
+        $response = $this->_httpClient->get($url)->send()->getBody();
         return json_decode($response);
     }
 }

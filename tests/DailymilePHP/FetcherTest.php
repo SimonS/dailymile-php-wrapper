@@ -35,7 +35,7 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
         $this->_guzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
         $this->_guzzle->expects($this->once())
             ->method('get')
-            ->with("http://api.dailymile.com/")
+            ->with($this->matchesRegularExpression("/^http:\/\/api.dailymile.com\//"))
             ->will($this->returnValue($this->_request));
 
         $this->_fetcher = new Fetcher($this->_guzzle);
@@ -45,6 +45,17 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
     public function testFetchReturnsDecodedJsonString()
     {
         $this->assertInstanceOf('stdClass', $this->_fetcher->fetch());
+    }
+
+    public function testFetchInterpolatesArgumentsAndAppendsJSON()
+    {
+        $this->_guzzle->expects($this->once())
+            ->method('get')
+            ->with("http://api.dailymile.com/foo.json")
+            ->will($this->returnValue($this->_request));
+
+        $this->_fetcher = new Fetcher($this->_guzzle);
+        $this->_fetcher->fetch('foo');
     }
 
 }
