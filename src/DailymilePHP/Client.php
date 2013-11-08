@@ -22,6 +22,11 @@ class Client {
         return $this->getFetcher()->fetch("people/$username");
     }
 
+    public function getFriends($username)
+    {
+        return $this->getFetcher()->fetch("people/$username/friends");
+    }
+
     public function getFetcher()
     {
         if (!$this->_fetcher)

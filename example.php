@@ -12,3 +12,6 @@ var_dump($client->getEntries('simons'));
 
 // Get person
 var_dump($client->getPerson('simons'));
+
+// Get person's friends
+var_dump($client->getFriends('simons'));
