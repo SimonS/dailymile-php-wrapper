@@ -9,7 +9,8 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $fetch = array(
             array('entries', 'foo'),
             array('people/foo', 'people'),
-            array('people/foo/friends', 'foo friends')
+            array('people/foo/friends', 'foo friends'),
+            array('people/foo/routes', 'foo routes')
         );
 
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
@@ -58,6 +59,16 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo friends', $this->_client->getFriends('foo'));
     }
 
+    public function testGetRoutesFetchesCorrectEndpoint()
+    {
+        $this->setFetchExpectation('people/foo/routes');
+        $this->_client->getRoutes('foo');
+    }
+
+    public function testGetRoutes()
+    {
+        $this->assertEquals('foo routes', $this->_client->getRoutes('foo'));
+    }
     private function setFetchExpectation($fetchEndpoint)
     {
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");

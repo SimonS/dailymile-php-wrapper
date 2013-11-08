@@ -27,6 +27,11 @@ class Client {
         return $this->getFetcher()->fetch("people/$username/friends");
     }
 
+    public function getRoutes($username)
+    {
+        return $this->getFetcher()->fetch("people/$username/routes");
+    }
+
     public function getFetcher()
     {
         if (!$this->_fetcher)

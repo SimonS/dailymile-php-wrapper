@@ -15,3 +15,6 @@ var_dump($client->getPerson('simons'));
 
 // Get person's friends
 var_dump($client->getFriends('simons'));
+
+// Get person's routes
+var_dump($client->getRoutes('simons'));
