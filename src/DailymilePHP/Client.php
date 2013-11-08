@@ -17,6 +17,11 @@ class Client {
         return $this->getFetcher()->fetch($endpoint);
     }
 
+    public function getPerson($username)
+    {
+        return $this->getFetcher()->fetch("people/$username");
+    }
+
     public function getFetcher()
     {
         if (!$this->_fetcher)

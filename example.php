@@ -9,3 +9,6 @@ var_dump($client->getEntries());
 
 // Get latest entries of specific unprotected username
 var_dump($client->getEntries('simons'));
+
+// Get person
+var_dump($client->getPerson('simons'));

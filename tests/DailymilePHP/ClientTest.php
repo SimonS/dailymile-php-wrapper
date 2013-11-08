@@ -6,11 +6,13 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     public function setUp()
     {
-        $this->_fetcher = $this->getMockBuilder("DailymilePHP\\Fetcher")
-            ->getMock();
+        $fetch = array(
+            array('entries', 'foo'),
+            array('people/foo', 'people')
+        );
 
-        $this->_fetcher->expects($this->any())->method('fetch')->with('entries')
-            ->will($this->returnValue(json_decode('{}')));
+        $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
+        $this->_fetcher->expects($this->any())->method('fetch')->will($this->returnValueMap($fetch));
 
         $this->_client = new \DailymilePHP\Client;
         $this->_client->setFetcher($this->_fetcher);
@@ -18,26 +20,37 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     public function testGetEntriesTriesToFetchEntries()
     {
-        $this->setEntryExpectationAndGetEntries(null, 'entries');
+        $this->setFetchExpectation('entries');
+        $this->_client->getEntries();
     }
 
-    public function testGetEntriesReturnsJsonObject()
+    public function testGetEntriesReturnsResultOfFetch()
     {
-        $this->assertInstanceOf('stdClass', $this->_client->getEntries());
+        $this->assertEquals('foo', $this->_client->getEntries());
     }
 
     public function testGetEntriesWithUsernameUsesCorrectEndpoint()
     {
-        $this->setEntryExpectationAndGetEntries('foo', 'people/foo/entries');
+        $this->setFetchExpectation('people/foo/entries');
+        $this->_client->getEntries('foo');
     }
 
-    private function setEntryExpectationAndGetEntries($entryInput, $fetchEndpoint)
+    public function testGetPersonFetchesCorrectEndpoint()
     {
-        $this->_fetcher = $this->getMockBuilder("DailymilePHP\\Fetcher")
-            ->getMock();
+        $this->setFetchExpectation('people/foo');
+        $this->_client->getPerson('foo');
+    }
+
+    public function testGetPersonReturnsResultOfFetch()
+    {
+        $this->assertEquals('people', $this->_client->getPerson('foo'));
+    }
+
+    private function setFetchExpectation($fetchEndpoint)
+    {
+        $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
         $this->_fetcher->expects($this->once())->method('fetch')->with($fetchEndpoint);
         $this->_client->setFetcher($this->_fetcher);
-        $this->_client->getEntries($entryInput);
     }
 
 }
