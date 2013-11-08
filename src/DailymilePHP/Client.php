@@ -7,38 +7,37 @@ class Client {
 
     public function getEntries($username=null)
     {
-        $endpoint = "entries";
+        return $username 
+            ? $this->fetchFromMap('entries', func_get_args()) 
+            : $this->getFetcher()->fetch("entries");
+    }
 
-        if ($username)
+    public function __call($method, $args)
+    {
+        preg_match('/^get([A-Z].*)/', $method, $matches);
+        if (isset($matches[1]))
         {
-            $endpoint = "people/$username/$endpoint";
+            return $this->fetchFromMap(mb_strtolower($matches[1]), $args);
         }
-
-        return $this->getFetcher()->fetch($endpoint);
+        throw new \BadMethodCallException;
     }
 
-    public function getPerson($username)
+    private function fetchFromMap($method, $params)
     {
-        return $this->getFetcher()->fetch("people/$username");
-    }
+        $username = $params[0];
+        $methodMap = array(
+            "person" => "people/$username",
+            "entries" => "people/$username/entries",
+            "friends" => "people/$username/friends",
+            "routes" => "people/$username/routes"
+        );
 
-    public function getFriends($username)
-    {
-        return $this->getFetcher()->fetch("people/$username/friends");
-    }
-
-    public function getRoutes($username)
-    {
-        return $this->getFetcher()->fetch("people/$username/routes");
+        return $this->getFetcher()->fetch($methodMap[$method]);
     }
 
     public function getFetcher()
     {
-        if (!$this->_fetcher)
-        {
-            $this->_fetcher = new Fetcher;
-        }
-
+        $this->_fetcher = $this->_fetcher ?: new Fetcher;
         return $this->_fetcher;
     }
 

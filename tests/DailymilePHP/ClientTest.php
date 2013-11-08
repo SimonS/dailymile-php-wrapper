@@ -69,6 +69,12 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     {
         $this->assertEquals('foo routes', $this->_client->getRoutes('foo'));
     }
+
+    public function testMissingMethodThrowsException(){
+        $this->setExpectedException('BadMethodCallException');
+        $this->_client->missingMethod();
+    }
+
     private function setFetchExpectation($fetchEndpoint)
     {
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
