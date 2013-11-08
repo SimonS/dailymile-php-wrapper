@@ -1,5 +1,5 @@
 {
-    "name": "SimonS/dailymile-php",
+    "name": "SimonS/dailymile-php-wrapper",
     "type": "library",
     "description": "PHP wrapper around dailymile API",
     "keywords": ["dailymile", "api", "wrapper",  "client"],
