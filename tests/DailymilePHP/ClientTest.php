@@ -70,9 +70,21 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo routes', $this->_client->getRoutes('foo'));
     }
 
+    public function testGetEntryFetchesCorrectEndpoint()
+    {
+        $this->setFetchExpectation('entries/foo');
+        $this->_client->getEntry('foo');
+    }
+
     public function testMissingMethodThrowsException(){
         $this->setExpectedException('BadMethodCallException');
         $this->_client->missingMethod();
+    }
+
+    public function testMissingIndexThrowsException()
+    {
+        $this->setExpectedException('BadMethodCallException');
+        $this->_client->getMissingMethod('foo');
     }
 
     private function setFetchExpectation($fetchEndpoint)

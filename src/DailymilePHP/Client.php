@@ -24,15 +24,21 @@ class Client {
 
     private function fetchFromMap($method, $params)
     {
-        $username = $params[0];
+        $parameter = count($params) ? $params[0] : null;
         $methodMap = array(
-            "person" => "people/$username",
-            "entries" => "people/$username/entries",
-            "friends" => "people/$username/friends",
-            "routes" => "people/$username/routes"
+            "person" => "people/$parameter",
+            "entries" => "people/$parameter/entries",
+            "friends" => "people/$parameter/friends",
+            "routes" => "people/$parameter/routes",
+            "entry" => "entries/$parameter"
         );
 
-        return $this->getFetcher()->fetch($methodMap[$method]);
+        if (isset($methodMap[$method]))
+        {
+            return $this->getFetcher()->fetch($methodMap[$method]);
+        }
+
+        throw new \BadMethodCallException;
     }
 
     public function getFetcher()
