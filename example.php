@@ -10,6 +10,9 @@ var_dump($client->getEntries());
 // Get latest entries of specific unprotected username
 var_dump($client->getEntries('simons'));
 
+//Get individual entry
+var_dump($client->getEntry('22399'));
+
 // Get person
 var_dump($client->getPerson('simons'));
 
