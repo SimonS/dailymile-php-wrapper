@@ -49,13 +49,26 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
 
     public function testFetchInterpolatesArgumentsAndAppendsJSON()
     {
+        $this->setGetExpectation("http://api.dailymile.com/foo.json");
+        $this->_fetcher->fetch('foo');
+    }
+
+    public function testFetchTakesParamsAndAppendsThemCorrectly()
+    {
+        $this->setGetExpectation(
+            "http://api.dailymile.com/foo.json?param1=bar&param2=baz"
+        );
+        $this->_fetcher->fetch('foo', ['param1' => 'bar', 'param2' => 'baz']);
+    }
+
+    private function setGetExpectation($url)
+    {
         $this->_guzzle->expects($this->once())
             ->method('get')
-            ->with("http://api.dailymile.com/foo.json")
+            ->with($url)
             ->will($this->returnValue($this->_request));
 
         $this->_fetcher = new Fetcher($this->_guzzle);
-        $this->_fetcher->fetch('foo');
     }
 
 }

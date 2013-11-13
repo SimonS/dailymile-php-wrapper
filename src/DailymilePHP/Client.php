@@ -5,14 +5,15 @@ namespace DailymilePHP;
 class Client {
     private $_fetcher;
 
-    public function getEntries($username=null)
+    public function getEntries(array $parameters=null)
     {
-        return $username 
+        return $parameters 
             ? $this->fetchFromMap('entries', func_get_args()) 
             : $this->getFetcher()->fetch("entries");
     }
 
-    public function __call($method, $args)
+
+    public function __call($method, array $args)
     {
         preg_match('/^get([A-Z].*)/', $method, $matches);
         if (isset($matches[1]))
@@ -22,15 +23,20 @@ class Client {
         throw new \BadMethodCallException;
     }
 
-    private function fetchFromMap($method, $params)
+    private function fetchFromMap($method, array $params)
     {
-        $parameter = count($params) ? $params[0] : null;
+        $username = null;
+        $id = null;
+
+        $parameters = count($params) ? $params[0] : null;
+        extract($parameters, EXTR_IF_EXISTS);
+
         $methodMap = array(
-            "person" => "people/$parameter",
-            "entries" => "people/$parameter/entries",
-            "friends" => "people/$parameter/friends",
-            "routes" => "people/$parameter/routes",
-            "entry" => "entries/$parameter"
+            "person" => "people/$username",
+            "entries" => "people/$username/entries",
+            "friends" => "people/$username/friends",
+            "routes" => "people/$username/routes",
+            "entry" => "entries/$id"
         );
 
         if (isset($methodMap[$method]))
@@ -47,7 +53,7 @@ class Client {
         return $this->_fetcher;
     }
 
-    public function setFetcher($fetcher)
+    public function setFetcher(Fetcher $fetcher)
     {
         $this->_fetcher = $fetcher;
     }

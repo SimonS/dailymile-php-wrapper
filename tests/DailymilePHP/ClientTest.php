@@ -7,10 +7,10 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $fetch = array(
-            array('entries', 'foo'),
-            array('people/foo', 'people'),
-            array('people/foo/friends', 'foo friends'),
-            array('people/foo/routes', 'foo routes')
+            array('entries', null, 'foo'),
+            array('people/foo', null, 'people'),
+            array('people/foo/friends', null, 'foo friends'),
+            array('people/foo/routes', null, 'foo routes')
         );
 
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
@@ -34,46 +34,46 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function testGetEntriesWithUsernameUsesCorrectEndpoint()
     {
         $this->setFetchExpectation('people/foo/entries');
-        $this->_client->getEntries('foo');
+        $this->_client->getEntries(['username' => 'foo']);
     }
 
     public function testGetPersonFetchesCorrectEndpoint()
     {
         $this->setFetchExpectation('people/foo');
-        $this->_client->getPerson('foo');
+        $this->_client->getPerson(['username' => 'foo']);
     }
 
     public function testGetPersonReturnsResultOfFetch()
     {
-        $this->assertEquals('people', $this->_client->getPerson('foo'));
+        $this->assertEquals('people', $this->_client->getPerson(['username' => 'foo']));
     }
 
     public function testGetFriendsFetchesCorrectEndpoint()
     {
         $this->setFetchExpectation('people/foo/friends');
-        $this->_client->getFriends('foo');
+        $this->_client->getFriends(['username' => 'foo']);
     }
 
     public function testGetFriendsReturnsResultOfFetch()
     {
-        $this->assertEquals('foo friends', $this->_client->getFriends('foo'));
+        $this->assertEquals('foo friends', $this->_client->getFriends(['username' => 'foo']));
     }
 
     public function testGetRoutesFetchesCorrectEndpoint()
     {
         $this->setFetchExpectation('people/foo/routes');
-        $this->_client->getRoutes('foo');
+        $this->_client->getRoutes(['username' => 'foo']);
     }
 
     public function testGetRoutes()
     {
-        $this->assertEquals('foo routes', $this->_client->getRoutes('foo'));
+        $this->assertEquals('foo routes', $this->_client->getRoutes(['username' => 'foo']));
     }
 
     public function testGetEntryFetchesCorrectEndpoint()
     {
         $this->setFetchExpectation('entries/foo');
-        $this->_client->getEntry('foo');
+        $this->_client->getEntry(['id' => 'foo']);
     }
 
     public function testMissingMethodThrowsException(){
@@ -84,7 +84,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function testMissingIndexThrowsException()
     {
         $this->setExpectedException('BadMethodCallException');
-        $this->_client->getMissingMethod('foo');
+        $this->_client->getMissingMethod(['foo']);
     }
 
     private function setFetchExpectation($fetchEndpoint)

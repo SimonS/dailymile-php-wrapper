@@ -8,16 +8,16 @@ $client = new DailymilePHP\Client;
 var_dump($client->getEntries());
 
 // Get latest entries of specific unprotected username
-var_dump($client->getEntries('simons'));
+var_dump($client->getEntries(['username' => 'simons']));
 
 //Get individual entry
-var_dump($client->getEntry('22399'));
+var_dump($client->getEntry(['id' => '22399']));
 
 // Get person
-var_dump($client->getPerson('simons'));
+var_dump($client->getPerson(['username' => 'simons']));
 
 // Get person's friends
-var_dump($client->getFriends('simons'));
+var_dump($client->getFriends(['username' => 'simons']));
 
 // Get person's routes
-var_dump($client->getRoutes('simons'));
+var_dump($client->getRoutes(['username' => 'simons']));
