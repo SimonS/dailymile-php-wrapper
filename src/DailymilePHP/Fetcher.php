@@ -11,7 +11,7 @@ class Fetcher {
         $this->_httpClient = $httpClient ?: new \Guzzle\Http\Client;
     }
 
-    public function fetch($endpoint='', $params=null)
+    public function fetch($endpoint='', $params=array())
     {
         $url = "http://api.dailymile.com/$endpoint.json";
 

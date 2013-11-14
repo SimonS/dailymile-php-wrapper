@@ -5,46 +5,53 @@ namespace DailymilePHP;
 class Client {
     private $_fetcher;
 
-    public function getEntries(array $parameters=null)
+    public function getEntries($parameters=array())
     {
-        return $parameters 
-            ? $this->fetchFromMap('entries', func_get_args()) 
-            : $this->getFetcher()->fetch("entries");
+        if (!is_array($parameters))
+            $parameters = ['username' => $parameters];
+
+        if (!isset($parameters['username']))
+            return $this->getFetcher()->fetch("entries", $parameters);
+
+        return $this->normaliseAndFetch($parameters, "entries");
     }
 
-
-    public function __call($method, array $args)
+    public function getFriends($username)
     {
-        preg_match('/^get([A-Z].*)/', $method, $matches);
-        if (isset($matches[1]))
-        {
-            return $this->fetchFromMap(mb_strtolower($matches[1]), $args);
-        }
-        throw new \BadMethodCallException;
+        $username = $this->normaliseParameter($username);
+        return $this->getFetcher()->fetch("people/$username/friends");
     }
 
-    private function fetchFromMap($method, array $params)
+    public function getRoutes($username)
     {
-        $username = null;
-        $id = null;
+        $username = $this->normaliseParameter($username);
+        return $this->getFetcher()->fetch("people/$username/routes");
+    }
+    
+    public function getEntry($id)
+    {
+        $id = $this->normaliseParameter($id, 'id');
+        return $this->getFetcher()->fetch("entries/$id");
+    }
 
-        $parameters = count($params) ? $params[0] : null;
-        extract($parameters, EXTR_IF_EXISTS);
+    public function getPerson($username)
+    {
+        $username = $this->normaliseParameter($username);
+        return $this->getFetcher()->fetch("people/$username");
+    }
 
-        $methodMap = array(
-            "person" => "people/$username",
-            "entries" => "people/$username/entries",
-            "friends" => "people/$username/friends",
-            "routes" => "people/$username/routes",
-            "entry" => "entries/$id"
-        );
+    private function normaliseAndFetch($parameters, $end)
+    {
+        $username = $this->normaliseParameter($parameters);
+        $parameters = !is_array($parameters) ? [] : $parameters;
+        unset($parameters['username']);        
 
-        if (isset($methodMap[$method]))
-        {
-            return $this->getFetcher()->fetch($methodMap[$method]);
-        }
+        return $this->getFetcher()->fetch("people/$username/$end", $parameters);
+    }
 
-        throw new \BadMethodCallException;
+    private function normaliseParameter($param, $key='username')
+    {
+        return is_array($param) ? $param[$key] : $param;
     }
 
     public function getFetcher()

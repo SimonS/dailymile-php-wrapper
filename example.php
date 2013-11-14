@@ -5,7 +5,7 @@ require 'vendor/autoload.php';
 $client = new DailymilePHP\Client;
 
 // Get latest public entries
-var_dump($client->getEntries());
+var_dump($client->getEntries(['page' => '2']));
 
 // Get latest entries of specific unprotected username
 var_dump($client->getEntries(['username' => 'simons']));
