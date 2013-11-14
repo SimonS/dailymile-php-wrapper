@@ -43,10 +43,22 @@ class Client {
         return $this->getFetcher()->fetch("people/$username");
     }
 
-    private function whitelistParameters($parameters)
+    public function getNearby($parameters)
+    {
+        $latitude = $parameters['latitude'];
+        $longitude = $parameters['longitude'];
+        $parameters = $this->whitelistParameters($parameters, ['radius']);
+
+        return $this->getFetcher()->fetch(
+            "entries/nearby/$latitude,$longitude", 
+            $parameters
+        );
+    }
+
+    private function whitelistParameters($parameters, $extra=[])
     {
         return array_intersect_key($parameters, array_flip(
-            ['until', 'since', 'page']
+            array_merge(['until', 'since', 'page'], $extra)
         ));
     }
 

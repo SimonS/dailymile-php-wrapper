@@ -7,6 +7,9 @@ $client = new DailymilePHP\Client;
 // Get latest public entries
 var_dump($client->getEntries(['page' => '2']));
 
+// Get latest nearby entries
+var_dump($client->getNearby(['latitude' => '37.77916', 'longitude' => '-122.420049']));
+
 // Get latest entries of specific unprotected username
 var_dump($client->getEntries(['username' => 'simons']));
 

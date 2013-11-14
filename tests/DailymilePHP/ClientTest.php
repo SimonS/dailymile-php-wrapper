@@ -92,6 +92,20 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('foo routes', $this->_client->getRoutes(['username' => 'foo']));
     }
 
+    public function testGetNearby()
+    {
+        $this->setFetchExpectation('entries/nearby/1,2');
+        $this->_client->getNearby(['latitude' => 1, 'longitude' => 2]);
+    }
+
+    public function testGetNearbyWithParams()
+    {
+        $this->setFetchExpectation('entries/nearby/1,2', ['page' => '2']);
+        $this->_client->getNearby(['latitude' => 1, 'longitude' => 2, 'page' => '2']);
+        $this->setFetchExpectation('entries/nearby/1,2', ['page' => '2', 'radius' => '10']);
+        $this->_client->getNearby(['latitude' => 1, 'longitude' => 2, 'page' => '2', 'radius' => '10']);
+    }
+
     public function testGetEntryFetchesCorrectEndpoint()
     {
         $this->setFetchExpectation('entries/foo');
