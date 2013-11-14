@@ -11,7 +11,10 @@ class Client {
             $parameters = ['username' => $parameters];
 
         if (!isset($parameters['username']))
-            return $this->getFetcher()->fetch("entries", $parameters);
+            return $this->getFetcher()->fetch(
+                "entries", 
+                $this->whitelistParameters($parameters)
+            );
 
         return $this->normaliseAndFetch($parameters, "entries");
     }
@@ -40,13 +43,22 @@ class Client {
         return $this->getFetcher()->fetch("people/$username");
     }
 
+    private function whitelistParameters($parameters)
+    {
+        return array_intersect_key($parameters, array_flip(
+            ['until', 'since', 'page']
+        ));
+    }
+
     private function normaliseAndFetch($parameters, $end)
     {
         $username = $this->normaliseParameter($parameters);
         $parameters = !is_array($parameters) ? [] : $parameters;
-        unset($parameters['username']);        
 
-        return $this->getFetcher()->fetch("people/$username/$end", $parameters);
+        return $this->getFetcher()->fetch(
+            "people/$username/$end", 
+            $this->whitelistParameters($parameters)
+        );
     }
 
     private function normaliseParameter($param, $key='username')

@@ -32,6 +32,16 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->_client->getEntries(['page' => '3']);
     }
 
+    public function testGetEntriesWhitelistsParameters()
+    {
+        $this->setFetchExpectation('entries', ['until' => '2']);
+        $this->_client->getEntries(['foo' => '3', 'until' => '2']);
+        $this->setFetchExpectation('people/fred/entries', ['until' => '2']);
+        $this->_client->getEntries(
+            ['username' => 'fred', 'foo' => '3', 'until' => '2']
+        );
+    }
+
     public function testGetEntriesReturnsResultOfFetch()
     {
         $this->assertEquals('foo', $this->_client->getEntries());
