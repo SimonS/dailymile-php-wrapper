@@ -7,14 +7,18 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function setUp()
     {
         $fetch = array(
-            array('entries', array(), 'foo'),
-            array('people/foo', array(), 'people'),
-            array('people/foo/friends', array(), 'foo friends'),
-            array('people/foo/routes', array(), 'foo routes')
+            array('entries', [], ['entries' => [1,2]]),
+            array('people/foo/entries', [], ['entries' => [1,2]]),
+            array('entries/nearby/lat,lon', [], ['entries' => [3,4]]),
+            array('people/foo', [], 'people'),
+            array('people/foo/friends', [], ['friends' => [5,6]]),
+            array('people/foo/routes', [], ['routes' => [7,8]])
         );
 
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
-        $this->_fetcher->expects($this->any())->method('fetch')->will($this->returnValueMap($fetch));
+        $this->_fetcher->expects($this->any())->method('fetch')->will(
+            $this->returnValueMap($fetch)
+        );
 
         $this->_client = new \DailymilePHP\Client;
         $this->_client->setFetcher($this->_fetcher);
@@ -44,7 +48,8 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     public function testGetEntriesReturnsResultOfFetch()
     {
-        $this->assertEquals('foo', $this->_client->getEntries());
+        $this->assertEquals([1,2], $this->_client->getEntries());
+        $this->assertEquals([1,2], $this->_client->getEntries('foo'));
     }
 
     public function testGetEntriesWithUsernameUsesCorrectEndpoint()
@@ -76,7 +81,10 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     
     public function testGetFriendsReturnsResultOfFetch()
     {
-        $this->assertEquals('foo friends', $this->_client->getFriends(['username' => 'foo']));
+        $this->assertEquals(
+            [5,6], 
+            $this->_client->getFriends(['username' => 'foo'])
+        );
     }
 
     public function testGetRoutesFetchesCorrectEndpoint()
@@ -89,13 +97,21 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     public function testGetRoutes()
     {
-        $this->assertEquals('foo routes', $this->_client->getRoutes(['username' => 'foo']));
+        $this->assertEquals([7,8], $this->_client->getRoutes(['username' => 'foo']));
     }
 
     public function testGetNearby()
     {
         $this->setFetchExpectation('entries/nearby/1,2');
         $this->_client->getNearby(['latitude' => 1, 'longitude' => 2]);
+    }
+
+    public function testGetNearbyDereferencesEntries()
+    {
+        $this->assertEquals(
+            [3,4], 
+            $this->_client->getNearby(['latitude'=>'lat', 'longitude'=>'lon'])
+        );
     }
 
     public function testGetNearbyWithParams()

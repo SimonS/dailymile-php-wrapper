@@ -14,21 +14,22 @@ class Client {
             return $this->getFetcher()->fetch(
                 "entries", 
                 $this->whitelistParameters($parameters)
-            );
+            )["entries"];
 
-        return $this->normaliseAndFetch($parameters, "entries");
+        $result = $this->normaliseAndFetch($parameters, "entries");
+        return $result['entries'];
     }
 
     public function getFriends($username)
     {
         $username = $this->normaliseParameter($username);
-        return $this->getFetcher()->fetch("people/$username/friends");
+        return $this->getFetcher()->fetch("people/$username/friends")["friends"];
     }
 
     public function getRoutes($username)
     {
         $username = $this->normaliseParameter($username);
-        return $this->getFetcher()->fetch("people/$username/routes");
+        return $this->getFetcher()->fetch("people/$username/routes")['routes'];
     }
     
     public function getEntry($id)
@@ -52,7 +53,7 @@ class Client {
         return $this->getFetcher()->fetch(
             "entries/nearby/$latitude,$longitude", 
             $parameters
-        );
+        )['entries'];
     }
 
     private function whitelistParameters($parameters, $extra=[])
