@@ -11,8 +11,8 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
         $this->_response = $this->getMockBuilder("Guzzle\\Http\\Message\\Response")
             ->disableOriginalConstructor()
             ->getMock();
-        $this->_response->expects($this->any())->method('getBody')->will(
-            $this->returnValue('{}')
+        $this->_response->expects($this->any())->method('json')->will(
+            $this->returnValue([])
         );
 
         $this->_request = $this->getMock("Guzzle\\Http\\Message\\RequestInterface");
@@ -29,7 +29,7 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
 
     public function testFetchUsesBaseUrlFromConstructor()
     {
-        $this->_response->expects($this->once())->method('getBody');
+        $this->_response->expects($this->once())->method('json');
         $this->_request->expects($this->once())->method('send');
         
         $this->_guzzle = $this->getMockBuilder("Guzzle\\Http\\Client")->getMock();
@@ -44,7 +44,7 @@ class FetcherTest extends \PHPUnit_Framework_TestCase {
 
     public function testFetchReturnsDecodedJsonString()
     {
-        $this->assertInstanceOf('stdClass', $this->_fetcher->fetch());
+        $this->assertInternalType('array', $this->_fetcher->fetch());
     }
 
     public function testFetchInterpolatesArgumentsAndAppendsJSON()

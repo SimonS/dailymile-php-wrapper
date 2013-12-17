@@ -19,8 +19,7 @@ class Fetcher {
             ? "$url?" . $this->appendParameters($params) 
             : $url;
         
-        $response = $this->_httpClient->get($url)->send()->getBody();
-        return json_decode($response);
+        return $this->_httpClient->get($url)->send()->json();
     }
 
     private function appendParameters($params)
