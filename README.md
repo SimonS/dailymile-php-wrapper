@@ -17,6 +17,9 @@ $client->getNearby(['latitude' => '37.77916', 'longitude' => '-122.420049']);
 // Get latest entries of specific unprotected username
 $client->getEntries(['username' => 'simons']);
 
+// Get all entries between specified times
+$client->getEntries(['username' => 'simons', 'since' => '1325462400', 'until' =? '1330387200', 'page' => 'all']);
+
 //Get individual entry
 $client->getEntry(['id' => '22399']);
 
