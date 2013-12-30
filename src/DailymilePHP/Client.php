@@ -26,7 +26,7 @@ class Client {
         }
 
         return $getAll 
-            ? $this->getPagedEntries() 
+            ? $this->getPagedEntries($parameters) 
             : $this->normaliseAndFetch($parameters, 'entries')['entries'];
     }
 
@@ -90,14 +90,14 @@ class Client {
         return is_array($param) ? $param[$key] : $param;
     }
 
-    private function getPagedEntries($username, $params)
+    private function getPagedEntries($params)
     {
         $results = [];
         $page = 1;
         do
         {
-            $parameters['page'] = strval($page++);
-            $fetched = $this->normaliseAndFetch($parameters, 'entries')['entries'];
+            $params['page'] = strval($page++);
+            $fetched = $this->normaliseAndFetch($params, 'entries')['entries'];
             $results = array_merge($results, $fetched);
         } while (count($fetched));
 
