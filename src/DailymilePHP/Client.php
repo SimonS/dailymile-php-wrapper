@@ -10,21 +10,24 @@ class Client {
         if (!is_array($parameters))
             $parameters = ['username' => $parameters];
 
+        $getAll = isset($parameters['page']) && $parameters['page'] === 'all' ? true : false;
+
         if (!isset($parameters['username']))
         {
-            if (isset($parameters['page']) && $parameters['page'] === 'all') 
+            if ($getAll) 
             {
                 throw new \InvalidArgumentException('All pages requires a username');
             }
-
+            
             return $this->getFetcher()->fetch(
                 "entries", 
                 $this->whitelistParameters($parameters)
             )["entries"];
         }
 
-        $result = $this->normaliseAndFetch($parameters, "entries");
-        return $result['entries'];
+        return $getAll 
+            ? $this->getPagedEntries() 
+            : $this->normaliseAndFetch($parameters, 'entries')['entries'];
     }
 
     public function getFriends($username)
@@ -74,6 +77,7 @@ class Client {
     {
         $username = $this->normaliseParameter($parameters);
         $parameters = !is_array($parameters) ? [] : $parameters;
+        unset($parameters['username']);
 
         return $this->getFetcher()->fetch(
             "people/$username/$end", 
@@ -84,6 +88,20 @@ class Client {
     private function normaliseParameter($param, $key='username')
     {
         return is_array($param) ? $param[$key] : $param;
+    }
+
+    private function getPagedEntries($username, $params)
+    {
+        $results = [];
+        $page = 1;
+        do
+        {
+            $parameters['page'] = strval($page++);
+            $fetched = $this->normaliseAndFetch($parameters, 'entries')['entries'];
+            $results = array_merge($results, $fetched);
+        } while (count($fetched));
+
+        return $results;
     }
 
     public function getFetcher()

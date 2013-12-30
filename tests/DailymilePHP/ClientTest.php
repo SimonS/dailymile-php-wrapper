@@ -12,7 +12,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
             array('entries/nearby/lat,lon', [], ['entries' => [3,4]]),
             array('people/foo', [], 'people'),
             array('people/foo/friends', [], ['friends' => [5,6]]),
-            array('people/foo/routes', [], ['routes' => [7,8]])
+            array('people/foo/routes', [], ['routes' => [7,8]]),
         );
 
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
@@ -134,6 +134,37 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     {
         $this->setExpectedException('InvalidArgumentException', 'All pages requires a username');
         $this->_client->getEntries(['page' => 'all']);
+    }
+
+    public function testAllWithPagesSendsMultipleRequests()
+    {
+        $fetch = array(
+            array('people/foo/entries', ['page' => '1'], ['entries' => [1,2]]),
+            array('people/foo/entries', ['page' => '2'], ['entries' => [3,4]]),
+            array('people/foo/entries', ['page' => '3'], ['entries' => []])
+        );
+        $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
+        $this->_fetcher->expects($this->exactly(3))->method('fetch')->will(
+            $this->returnValueMap($fetch)
+        );
+        $this->_client->setFetcher($this->_fetcher);
+        $this->_client->getEntries(['username' => 'foo', 'page' => 'all']);
+    }
+
+    public function testAllAggregatesRequests()
+    {
+        $fetch = array(
+            array('people/foo/entries', ['page' => '1'], ['entries' => [1,2]]),
+            array('people/foo/entries', ['page' => '2'], ['entries' => [3,4]]),
+            array('people/foo/entries', ['page' => '3'], ['entries' => []])
+        );
+        $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");
+        $this->_fetcher->expects($this->any())->method('fetch')->will(
+            $this->returnValueMap($fetch)
+        );
+        $this->_client->setFetcher($this->_fetcher);
+        $entries = $this->_client->getEntries(['username' => 'foo', 'page' => 'all']);
+        $this->assertEquals([1,2,3,4], $entries);
     }
 
     private function setFetchExpectation($fetchEndpoint, $params=array())

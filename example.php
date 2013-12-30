@@ -24,3 +24,6 @@ var_dump($client->getFriends(['username' => 'simons']));
 
 // Get person's routes
 var_dump($client->getRoutes(['username' => 'simons']));
+
+// Get all entries
+var_dump($client->getEntries(['username' => 'simons', 'page' => 'all', 'since' => '1325462400', 'until' => '1330387200']));
