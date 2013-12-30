@@ -130,6 +130,12 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->_client->getEntry('foo');
     }
 
+    public function testAllWithNoUsernameThrowsException()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'All pages requires a username');
+        $this->_client->getEntries(['page' => 'all']);
+    }
+
     private function setFetchExpectation($fetchEndpoint, $params=array())
     {
         $this->_fetcher = $this->getMock("DailymilePHP\\Fetcher");

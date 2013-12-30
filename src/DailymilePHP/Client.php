@@ -11,10 +11,17 @@ class Client {
             $parameters = ['username' => $parameters];
 
         if (!isset($parameters['username']))
+        {
+            if (isset($parameters['page']) && $parameters['page'] === 'all') 
+            {
+                throw new \InvalidArgumentException('All pages requires a username');
+            }
+
             return $this->getFetcher()->fetch(
                 "entries", 
                 $this->whitelistParameters($parameters)
             )["entries"];
+        }
 
         $result = $this->normaliseAndFetch($parameters, "entries");
         return $result['entries'];
